@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use starter::AppPlugin;
+use belladonna_sherbet::AppPlugin;
 
 fn main() {
     App::new().add_plugins(AppPlugin).run();
