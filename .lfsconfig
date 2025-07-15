@@ -1,2 +1,3 @@
 [lfs]
 	url = https://coffee-constellations@dev.azure.com/coffee-constellations/belladonna-sherbet/_git/belladonna-sherbet
+	locksverify = false
