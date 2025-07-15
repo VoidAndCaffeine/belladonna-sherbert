@@ -28,9 +28,3 @@ cargo run --features dev
 - Cargo configured according to Bevy guide with build optimizations
 - [Avian](https://github.com/Jondolf/avian) physics
 - Generic set of starting plugins with your games logic inside `GamePlugin`
-- `AI.md` for passing to tools like [`aider`](https://aider.chat/) and others
-  that helps them get more recent context from Bevy
-
-## Missing
-
-- Deployment
