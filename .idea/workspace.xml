@@ -56,7 +56,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Cargo.Run belladonna-sherbet.executor": "Debug",
+    "Cargo.Run belladonna-sherbet.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
@@ -137,7 +137,7 @@
       <option name="presentableId" value="Default" />
       <updated>1752640978251</updated>
       <workItem from="1752640979822" duration="2317000" />
-      <workItem from="1752643349489" duration="14340000" />
+      <workItem from="1752643349489" duration="14722000" />
     </task>
     <servers />
   </component>
