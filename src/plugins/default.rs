@@ -1,6 +1,6 @@
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
-const BACKGROUND_COLOR: Color = Color::srgb(0.4, 0.4, 0.4);
+const BACKGROUND_COLOR: Color = Color::srgb(1.0, 0.0, 1.0);
 
 // Sets up the default plugins like windows, assets, etc
 

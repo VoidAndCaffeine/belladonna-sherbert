@@ -7,3 +7,4 @@ pub(super) mod fonts;
 pub(super) mod game;
 pub(super) mod input;
 pub(super) mod physics;
+pub(super) mod menus;
