@@ -1,3 +1,5 @@
 [submodule "assets"]
 	path = assets
 	url = https://coffee-constellations@dev.azure.com/coffee-constellations/belladonna-sherbet/_git/belladonna-sherbet-assets
+	branch = master
+	update = rebase
