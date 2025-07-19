@@ -29,23 +29,24 @@ git switch master
 Add the following to ./.git/config, replacing the [remote "origin"] already there
 (I don't know how much of this config is actually necessary, specifically the duplicated `remote =` and `url =`)
 ```
+[remote "origin"]
+        url = https://coffee-constellations@dev.azure.com/coffee-constellations/belladonna-sherbet/_git/belladonna-sherbet
+        pushurl = https://coffee-constellations@dev.azure.com/coffee-constellations/belladonna-sherbet/_git/belladonna-sherbet
+        pushurl = git@github.com:VoidAndCaffeine/belladonna-sherbet.git
+        pushurl = git@gitlab.com:VoidAndCaffeine/belladonna-sherbet.git
+        fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+        remote = origin
+        merge = refs/heads/master
 [remote "azure"]
         url = https://coffee-constellations@dev.azure.com/coffee-constellations/belladonna-sherbet/_git/belladonna-sherbet
         fetch = +refs/heads/*:refs/remotes/origin/*
 [remote "github"]
         url = git@github.com:VoidAndCaffeine/belladonna-sherbet.git
         fetch = +refs/heads/*:refs/remotes/origin/*
-[remote "origin"]
-        url = git@github.com:VoidAndCaffeine/belladonna-sherbet.git
-        url = https://coffee-constellations@dev.azure.com/coffee-constellations/belladonna-sherbet/_git/belladonna-sherbet
-        pushurl = git@ssh.dev.azure.com:v3/coffee-constellations/belladonna-sherbet/belladonna-sherbet-assets
-        pushurl = git@github.com:VoidAndCaffeine/belladonna-sherbet.git
+[remote "gitlab"]
+        url = git@gitlab.com:VoidAndCaffeine/belladonna-sherbet.git
         fetch = +refs/heads/*:refs/remotes/origin/*
-[branch "master"]
-        remote = origin
-        remote = github
-        remote = azure
-        merge = refs/heads/master
 ```
 
 ## Building
