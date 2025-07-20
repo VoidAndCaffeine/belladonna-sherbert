@@ -2,7 +2,7 @@
 
 use bevy::{app::App, prelude::*};
 
-use crate::prelude::{random_number, main_menu, loading, resources::settings};
+use crate::prelude::{random_number, main_menu, splash, resources::settings};
 
 // This is an example of the most simple plugin you can write, without
 // having to implement any traits.
@@ -31,6 +31,6 @@ pub(crate) fn plugin(app: &mut App) {
     app
         .init_state::<GameState>()
         .insert_state(LoadingState::MainMenu)
-        .add_plugins((loading::loading_plugin, main_menu::main_menu_plugin))
+        .add_plugins((splash::splash_plugin, main_menu::main_menu_plugin))
     ;
 }

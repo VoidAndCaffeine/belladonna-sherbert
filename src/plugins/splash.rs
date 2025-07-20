@@ -6,7 +6,7 @@ use crate::prelude::game::{GameState,LoadingState};
 use crate::prelude::plugins::ui::despawn_screen;
 use bevy::prelude::*;
 
-pub(crate) fn loading_plugin(app: &mut App) {
+pub(crate) fn splash_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::LoadingScreen),
                      loading_main_menu.run_if(in_state(LoadingState::MainMenu)))
