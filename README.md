@@ -31,7 +31,7 @@ Add the following to ./.git/config, replacing the [remote "origin"] already ther
 ```
 [remote "origin"]
         url = https://coffee-constellations@dev.azure.com/coffee-constellations/belladonna-sherbet/_git/belladonna-sherbet
-        pushurl = https://coffee-constellations@dev.azure.com/coffee-constellations/belladonna-sherbet/_git/belladonna-sherbet
+        pushurl = git@ssh.dev.azure.com:v3/coffee-constellations/belladonna-sherbet/belladonna-sherbet
         pushurl = git@github.com:VoidAndCaffeine/belladonna-sherbet.git
         pushurl = git@gitlab.com:VoidAndCaffeine/belladonna-sherbet.git
         fetch = +refs/heads/*:refs/remotes/origin/*
