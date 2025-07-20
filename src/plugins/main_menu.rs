@@ -1,4 +1,4 @@
-use crate::prelude::{fonts::FontAssets, game::GameState, plugins::ui::despawn_screen};
+use crate::prelude::{fonts::FontAssets, game::GameState, entity_despawner};
 use bevy::{
     app::AppExit,
     text::cosmic_text::ttf_parser::Weight::Black,
@@ -39,7 +39,7 @@ pub fn main_menu_plugin(app: &mut App) {
     app
         .init_state::<MainMenuState>()
         .add_systems(OnEnter(GameState::MainMenu), main_menu_setup)
-        .add_systems(OnExit(GameState::MainMenu), despawn_screen::<OnMainMenu>)
+        .add_systems(OnExit(GameState::MainMenu), entity_despawner::<OnMainMenu>)
         .add_systems(Update,(menu_action, button_system).run_if(in_state(GameState::MainMenu)));
 }
 
@@ -66,7 +66,7 @@ struct OnMainMenu;
 
 #[derive(Component)]
 #[require(Camera2d)]
-pub struct MenuCamera;
+struct MenuCamera;
 
 fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
@@ -180,8 +180,9 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ),
                     ]
                 ),
+                MenuCamera,
             ]
-        ),MenuCamera,
+        ),
         ],
     ));
 }
@@ -199,12 +200,12 @@ fn menu_action(
         if *interaction == Interaction::Pressed {
             match menu_button_action {
                 MenuButtonAction::World1 => {
-                    info!("Loading World 1");
+                    info!("Selected World 1");
                     menu_state.set(MainMenuState::Disabled);
                     game_state.set(GameState::InGameWorld1)
                 }
                 MenuButtonAction::World2 => {
-                    info!("Loading World 2");
+                    info!("Selected World 2");
                     menu_state.set(MainMenuState::Disabled);
                     game_state.set(GameState::InGameWorld2)
                 }

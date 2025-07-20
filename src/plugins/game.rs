@@ -1,8 +1,7 @@
 #![allow(unused)]
 
 use bevy::{app::App, prelude::*};
-
-use crate::prelude::{random_number, main_menu, resources::settings};
+use crate::prelude::{random_number, main_menu, world1, world2};
 
 // This is an example of the most simple plugin you can write, without
 // having to implement any traits.
@@ -23,5 +22,7 @@ pub(crate) fn plugin(app: &mut App) {
     app
         .init_state::<GameState>()
         .add_plugins(main_menu::main_menu_plugin)
+        .add_plugins(world1::world1_plugin)
+        .add_plugins(world2::world2_plugin)
     ;
 }
