@@ -12,8 +12,15 @@ mod utils;
 mod prelude {
     pub use super::*;
     pub use {components::*, plugins::*, resources::*, utils::*};
+    pub use entity_despawner;
 }
 
+
+pub fn entity_despawner<T: Component>(to_despawn: Query<Entity, With<T>>, mut commands: Commands) {
+    for entity in &to_despawn {
+        commands.entity(entity).despawn();
+    }
+}
 pub struct AppPlugin;
 
 impl Plugin for AppPlugin {
