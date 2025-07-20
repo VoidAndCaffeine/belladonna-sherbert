@@ -2,7 +2,7 @@
 
 use bevy::{app::App, prelude::*};
 
-use crate::prelude::{random_number, main_menu, splash, resources::settings};
+use crate::prelude::{random_number, main_menu, resources::settings};
 
 // This is an example of the most simple plugin you can write, without
 // having to implement any traits.
@@ -13,24 +13,15 @@ use crate::prelude::{random_number, main_menu, splash, resources::settings};
 #[derive(States, Debug, Clone, PartialEq, Eq, Hash, Default)]
 pub enum GameState {
     #[default]
-    LoadingScreen,
     MainMenu,
-    InGame,
-}
-
-#[derive(States, Debug, Clone, PartialEq, Eq, Hash)]
-pub enum LoadingState {
-    MainMenu,
-    MainMenuSilent,
-    NewGame,
-    LoadSave,
+    InGameWorld1,
+    InGameWorld2,
 }
 
 pub(crate) fn plugin(app: &mut App) {
     // Your game logic here
     app
         .init_state::<GameState>()
-        .insert_state(LoadingState::MainMenu)
-        .add_plugins((splash::splash_plugin, main_menu::main_menu_plugin))
+        .add_plugins(main_menu::main_menu_plugin)
     ;
 }

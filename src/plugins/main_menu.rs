@@ -1,36 +1,11 @@
-use bevy::prelude::*;
-
-#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
-enum MainMenuState {
-    #[default]
-    Main,
-    Load,
-    Settings,
-    Disabled,
-}
-
-// All actions that can be triggered from a button click
-#[derive(Component)]
-enum MenuButtonAction {
-    New,
-    Continue,
-    Load,
-    Settings,
-    Quit,
-}
-
-use crate::plugins::ui;
 use crate::prelude::{fonts::FontAssets, game::GameState, plugins::ui::despawn_screen};
-use bevy::asset::meta::Settings;
-use bevy::audio::Volume;
-use bevy::text::cosmic_text::ttf_parser::Weight::Black;
 use bevy::{
     app::AppExit,
+    text::cosmic_text::ttf_parser::Weight::Black,
     color::palettes::css::BLACK,
     ecs::spawn::{SpawnIter, SpawnWith},
     prelude::*,
 };
-use crate::plugins::game::LoadingState;
 
 // Button Colors
 const TEXT_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
@@ -38,6 +13,23 @@ const NORMAL_BUTTON: Color = Color::srgb(0.15, 0.15, 0.15);
 const HOVERED_BUTTON: Color = Color::srgb(0.25, 0.25, 0.25);
 const HOVERED_PRESSED_BUTTON: Color = Color::srgb(0.25, 0.65, 0.25);
 const PRESSED_BUTTON: Color = Color::srgb(0.35, 0.75, 0.35);
+
+#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+enum MainMenuState {
+    #[default]
+    Main,
+    Settings,
+    Disabled,
+}
+
+// All actions that can be triggered from a button click
+#[derive(Component)]
+enum MenuButtonAction {
+    World1,
+    World2,
+    Settings,
+    Quit,
+}
 
 // components
 #[derive(Component)]
@@ -72,7 +64,12 @@ fn button_system(
 #[derive(Component)]
 struct OnMainMenu;
 
+#[derive(Component)]
+#[require(Camera2d)]
+pub struct MenuCamera;
+
 fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+
     let button_node = Node {
         width: Val::Px(300.0),
         height: Val::Px(65.0),
@@ -131,11 +128,11 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Button,
                     button_node.clone(),
                     BackgroundColor(NORMAL_BUTTON),
-                    MenuButtonAction::New,
+                    MenuButtonAction::World1,
                     children![
                         (ImageNode::new(right_icon.clone()), button_icon_node.clone()),
                         (
-                            Text::new("New Game"),
+                            Text::new("World 1"),
                             button_text_font.clone(),
                             TextColor(TEXT_COLOR),
                         ),
@@ -145,25 +142,11 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Button,
                     button_node.clone(),
                     BackgroundColor(NORMAL_BUTTON),
-                    MenuButtonAction::Continue,
+                    MenuButtonAction::World2,
                     children![
                         (ImageNode::new(right_icon.clone()), button_icon_node.clone()),
                         (
-                            Text::new("Continue Game"),
-                            button_text_font.clone(),
-                            TextColor(TEXT_COLOR),
-                        ),
-                    ]
-                ),
-                (
-                    Button,
-                    button_node.clone(),
-                    BackgroundColor(NORMAL_BUTTON),
-                    MenuButtonAction::Load,
-                    children![
-                        (ImageNode::new(right_icon), button_icon_node.clone()),
-                        (
-                            Text::new("Load Game"),
+                            Text::new("World 2"),
                             button_text_font.clone(),
                             TextColor(TEXT_COLOR),
                         ),
@@ -198,7 +181,8 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     ]
                 ),
             ]
-        )],
+        ),MenuCamera,
+        ],
     ));
 }
 
@@ -210,27 +194,19 @@ fn menu_action(
     mut app_exit_events: EventWriter<AppExit>,
     mut menu_state: ResMut<NextState<MainMenuState>>,
     mut game_state: ResMut<NextState<GameState>>,
-    mut loading_state: ResMut<NextState<LoadingState>>,
 ){
     for (interaction, menu_button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match menu_button_action {
-                MenuButtonAction::Continue => {
+                MenuButtonAction::World1 => {
+                    info!("Loading World 1");
                     menu_state.set(MainMenuState::Disabled);
-                    game_state.set(GameState::LoadingScreen);
-                    loading_state.set(LoadingState::LoadSave);
-                    error!("Game continue is not yet implemented");
-                    app_exit_events.write(AppExit::from_code(1));
+                    game_state.set(GameState::InGameWorld1)
                 }
-                MenuButtonAction::Load => {
-                    menu_state.set(MainMenuState::Load);
-                    warn!("Game loading is not yet implemented");
-                }
-                MenuButtonAction::New => {
-                    info!("Loading New Game");
+                MenuButtonAction::World2 => {
+                    info!("Loading World 2");
                     menu_state.set(MainMenuState::Disabled);
-                    game_state.set(GameState::LoadingScreen);
-                    loading_state.set(LoadingState::NewGame);
+                    game_state.set(GameState::InGameWorld2)
                 }
                 MenuButtonAction::Settings => {
                     menu_state.set(MainMenuState::Settings);
