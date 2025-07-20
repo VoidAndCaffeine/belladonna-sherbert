@@ -1,4 +1,3 @@
-pub(super) mod camera;
 pub(super) mod debug;
 pub(super) mod default;
 pub(super) mod dev_tools;

@@ -1,4 +1,6 @@
+use avian3d::prelude::*;
 use bevy::{asset::{AssetMetaCheck,load_internal_binary_asset}, prelude::*};
+use bevy::render::RenderSet::PhaseSort;
 use bevy::window::PresentMode;
 use blenvy::*;
 
@@ -30,30 +32,10 @@ pub(crate) fn plugin(app: &mut App) {
                     }),
                     ..default()
                 }),
-            BlenvyPlugin::default())
-        ).register_type::<Player>()
-        .add_systems(Startup, setup);
-
-    #[derive(Component, Reflect)]
-    #[reflect(Component)]
-    struct Player {
-        strength: f32,
-        perception: f32,
-        endurance: f32,
-        charisma: f32,
-        intelligence: f32,
-        agility: f32,
-        luck: f32,
-    }
-
-    fn setup(mut commands: Commands) {
-        commands.spawn((
-            BlueprintInfo::from_path("levels/World.glb"),
-            SpawnBlueprint,
-            HideUntilReady,
-            GameWorldTag,
-        ));
-    }
+            BlenvyPlugin::default(),
+            PhysicsPlugins::default(),
+        ))
+    ;
 
     // set default font to Rotis
     load_internal_binary_asset!(
