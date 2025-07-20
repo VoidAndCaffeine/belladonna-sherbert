@@ -6,6 +6,17 @@ enum MainMenuState {
     Main,
     Load,
     Settings,
+    Disabled,
+}
+
+// All actions that can be triggered from a button click
+#[derive(Component)]
+enum MenuButtonAction {
+    New,
+    Continue,
+    Load,
+    Settings,
+    Quit,
 }
 
 use crate::plugins::ui;
@@ -19,6 +30,7 @@ use bevy::{
     ecs::spawn::{SpawnIter, SpawnWith},
     prelude::*,
 };
+use crate::plugins::game::LoadingState;
 
 // Button Colors
 const TEXT_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
@@ -32,9 +44,11 @@ const PRESSED_BUTTON: Color = Color::srgb(0.35, 0.75, 0.35);
 struct SelectedOption;
 
 pub fn main_menu_plugin(app: &mut App) {
-    app.add_systems(OnEnter(GameState::MainMenu), main_menu_setup)
+    app
+        .init_state::<MainMenuState>()
+        .add_systems(OnEnter(GameState::MainMenu), main_menu_setup)
         .add_systems(OnExit(GameState::MainMenu), despawn_screen::<OnMainMenu>)
-        .add_systems(Update, button_system.run_if(in_state(GameState::MainMenu)));
+        .add_systems(Update,(menu_action, button_system).run_if(in_state(GameState::MainMenu)));
 }
 
 // button setup
@@ -117,6 +131,7 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Button,
                     button_node.clone(),
                     BackgroundColor(NORMAL_BUTTON),
+                    MenuButtonAction::New,
                     children![
                         (ImageNode::new(right_icon.clone()), button_icon_node.clone()),
                         (
@@ -130,6 +145,21 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Button,
                     button_node.clone(),
                     BackgroundColor(NORMAL_BUTTON),
+                    MenuButtonAction::Continue,
+                    children![
+                        (ImageNode::new(right_icon.clone()), button_icon_node.clone()),
+                        (
+                            Text::new("Continue Game"),
+                            button_text_font.clone(),
+                            TextColor(TEXT_COLOR),
+                        ),
+                    ]
+                ),
+                (
+                    Button,
+                    button_node.clone(),
+                    BackgroundColor(NORMAL_BUTTON),
+                    MenuButtonAction::Load,
                     children![
                         (ImageNode::new(right_icon), button_icon_node.clone()),
                         (
@@ -143,6 +173,7 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Button,
                     button_node.clone(),
                     BackgroundColor(NORMAL_BUTTON),
+                    MenuButtonAction::Settings,
                     children![
                         (ImageNode::new(wrench_icon), button_icon_node.clone()),
                         (
@@ -156,6 +187,7 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Button,
                     button_node.clone(),
                     BackgroundColor(NORMAL_BUTTON),
+                    MenuButtonAction::Quit,
                     children![
                         (ImageNode::new(exit_icon), button_icon_node.clone()),
                         (
@@ -168,4 +200,47 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ]
         )],
     ));
+}
+
+fn menu_action(
+    interaction_query: Query<
+        (&Interaction, &MenuButtonAction),
+        (Changed<Interaction>, With<Button>),
+    >,
+    mut app_exit_events: EventWriter<AppExit>,
+    mut menu_state: ResMut<NextState<MainMenuState>>,
+    mut game_state: ResMut<NextState<GameState>>,
+    mut loading_state: ResMut<NextState<LoadingState>>,
+){
+    for (interaction, menu_button_action) in &interaction_query {
+        if *interaction == Interaction::Pressed {
+            match menu_button_action {
+                MenuButtonAction::Continue => {
+                    menu_state.set(MainMenuState::Disabled);
+                    game_state.set(GameState::LoadingScreen);
+                    loading_state.set(LoadingState::LoadSave);
+                    error!("Game continue is not yet implemented");
+                    app_exit_events.write(AppExit::from_code(1));
+                }
+                MenuButtonAction::Load => {
+                    menu_state.set(MainMenuState::Load);
+                    warn!("Game loading is not yet implemented");
+                }
+                MenuButtonAction::New => {
+                    info!("Loading New Game");
+                    menu_state.set(MainMenuState::Disabled);
+                    game_state.set(GameState::LoadingScreen);
+                    loading_state.set(LoadingState::NewGame);
+                }
+                MenuButtonAction::Settings => {
+                    menu_state.set(MainMenuState::Settings);
+                    warn!("Settings is not yet implemented");
+                }
+                MenuButtonAction::Quit => {
+                    info!("Quitting game");
+                    app_exit_events.write(AppExit::Success);
+                }
+            }
+        }
+    }
 }

@@ -19,10 +19,19 @@ pub enum GameState {
     InGame,
 }
 
+#[derive(States, Debug, Clone, PartialEq, Eq, Hash)]
+pub enum LoadingState {
+    MainMenu,
+    MainMenuSilent,
+    NewGame,
+    LoadSave,
+}
+
 pub(crate) fn plugin(app: &mut App) {
     // Your game logic here
     app
         .init_state::<GameState>()
+        .insert_state(LoadingState::MainMenu)
         .add_plugins((loading::loading_plugin, main_menu::main_menu_plugin))
     ;
 }

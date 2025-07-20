@@ -2,13 +2,16 @@
 // non-startup loading screens
 // support variable load time
 // coffee constellations logo
-use crate::prelude::game::GameState;
+use crate::prelude::game::{GameState,LoadingState};
 use crate::prelude::plugins::ui::despawn_screen;
 use bevy::prelude::*;
 
 pub(crate) fn loading_plugin(app: &mut App) {
-    app.add_systems(OnEnter(GameState::LoadingScreen), loading_setup)
-        .add_systems(Update, countdown.run_if(in_state(GameState::LoadingScreen)))
+    app
+        .add_systems(OnEnter(GameState::LoadingScreen),
+                     loading_main_menu.run_if(in_state(LoadingState::MainMenu)))
+        .add_systems(Update, countdown.run_if(in_state(LoadingState::MainMenu)))
+        .add_systems(Update, countdown.run_if(in_state(LoadingState::MainMenuSilent)))
         .add_systems(
             OnExit(GameState::LoadingScreen),
             despawn_screen::<OnSplashScreen>,
@@ -22,7 +25,7 @@ struct OnSplashScreen;
 #[derive(Resource, Deref, DerefMut)]
 struct SplashTimer(Timer);
 
-fn loading_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn loading_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let icon = asset_server.load("textures/bevy.png");
     // birb.
     commands.spawn((
@@ -46,6 +49,8 @@ fn loading_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // insert timer resource into engine
     commands.insert_resource(SplashTimer(Timer::from_seconds(1.0, TimerMode::Once)));
 }
+
+
 fn countdown(
     mut game_state: ResMut<NextState<GameState>>,
     time: Res<Time>,
