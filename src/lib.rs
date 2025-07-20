@@ -21,7 +21,7 @@ impl Plugin for AppPlugin {
         app.add_plugins((
             plugins::asset_tracking::plugin,
             plugins::default::plugin,
-            plugins::fonts::plugin,
+            resources::fonts::plugin,
             plugins::camera::plugin,
             plugins::physics::plugin,
             plugins::input::plugin,
