@@ -19,7 +19,7 @@ pub struct AppPlugin;
 impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
-            plugins::asset_tracking::plugin,
+            resources::asset_tracking::plugin,
             plugins::default::plugin,
             resources::fonts::plugin,
             plugins::camera::plugin,
