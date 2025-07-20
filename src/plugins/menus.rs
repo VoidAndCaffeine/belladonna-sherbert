@@ -1,62 +1,13 @@
 use bevy::prelude::*;
-use crate::prelude::game::GameState;
 
-//Todo:
-// non-startup loading screens
-// support variable load time
-// coffee constellations logo
-pub(super) mod loading {
-    use bevy::prelude::*;
-    use super::{despawn_screen, GameState};
-
-    pub fn loading_plugin(app: &mut App) {
-        app
-            .add_systems(OnEnter(GameState::LoadingScreen), loading_setup)
-            .add_systems(Update, countdown.run_if(in_state(GameState::LoadingScreen)))
-            .add_systems(OnExit(GameState::LoadingScreen), despawn_screen::<OnSplashScreen>);
-    }
-
-    // tag for splash screen objects, makes deconstruction easy
-    #[derive(Component)]
-    struct OnSplashScreen;
-
-    #[derive(Resource, Deref, DerefMut)]
-    struct SplashTimer(Timer);
-
-    fn loading_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-        let icon = asset_server.load("textures/bevy.png");
-        // birb.
-        commands.spawn((
-            Node {
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                ..default()
-            },
-            OnSplashScreen,
-            // child of ^ node
-            children![(
-                ImageNode::new(icon),
-                Node {
-                    width: Val::Px(200.0),
-                    ..default()
-                },
-            )],
-        ));
-        // insert timer resource into engine
-        commands.insert_resource(SplashTimer(Timer::from_seconds(1.0, TimerMode::Once)));
-    }
-    fn countdown(
-        mut game_state: ResMut<NextState<GameState>>,
-        time: Res<Time>,
-        mut timer: ResMut<SplashTimer>,
-    ) {
-        if timer.tick(time.delta()).finished() {
-            game_state.set(GameState::MainMenu);
-        }
-    }
+#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+enum MainMenuState {
+    #[default]
+    Main,
+    Load,
+    Settings,
 }
+
 pub(super) mod main_menu {
     use bevy::{
         app::AppExit,
@@ -67,9 +18,8 @@ pub(super) mod main_menu {
     use bevy::asset::meta::Settings;
     use bevy::audio::Volume;
     use bevy::text::cosmic_text::ttf_parser::Weight::Black;
-    use crate::prelude::fonts::FontAssets;
-    use super::{despawn_screen, GameState};
-
+    use crate::plugins::ui;
+    use crate::prelude::{fonts::FontAssets, plugins::ui::despawn_screen, game::GameState};
 
     // Button Colors
     const TEXT_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
@@ -112,7 +62,7 @@ pub(super) mod main_menu {
     #[derive(Component)]
     struct OnMainMenu;
 
-    fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>, fonts: Res<FontAssets>) {
+    fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
         let button_node = Node {
             width: Val::Px(300.0),
@@ -223,11 +173,5 @@ pub(super) mod main_menu {
                 ]
             )],
         ));
-    }
-}
-
-fn despawn_screen<T: Component>(to_despawn: Query<Entity, With<T>>, mut commands: Commands) {
-    for entity in &to_despawn {
-        commands.entity(entity).despawn();
     }
 }
