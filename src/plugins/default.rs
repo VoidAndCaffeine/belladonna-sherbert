@@ -1,4 +1,5 @@
 use bevy::{asset::{AssetMetaCheck,load_internal_binary_asset}, prelude::*};
+use bevy::window::PresentMode;
 
 const BACKGROUND_COLOR: Color = Color::srgb(1.0, 0.0, 1.0);
 
@@ -20,6 +21,7 @@ pub(crate) fn plugin(app: &mut App) {
                         title: "Belladonna Sherbet".into(),
                         resizable: false,
                         resolution: (1920., 1080.).into(),
+                        present_mode: PresentMode::Immediate,
                         canvas: Some("#bevy".to_owned()),
                         desired_maximum_frame_latency: core::num::NonZero::new(1u32),
                         fit_canvas_to_parent: true,
