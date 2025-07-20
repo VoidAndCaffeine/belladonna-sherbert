@@ -67,8 +67,9 @@ pub(super) mod main_menu {
     use bevy::asset::meta::Settings;
     use bevy::audio::Volume;
     use bevy::text::cosmic_text::ttf_parser::Weight::Black;
+    use crate::prelude::fonts::FontAssets;
     use super::{despawn_screen, GameState};
-    use crate::prelude::resources::settings::*;
+
 
     // Button Colors
     const TEXT_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
@@ -111,7 +112,8 @@ pub(super) mod main_menu {
     #[derive(Component)]
     struct OnMainMenu;
 
-    fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+    fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>, fonts: Res<FontAssets>) {
+
         let button_node = Node {
             width: Val::Px(300.0),
             height: Val::Px(65.0),
@@ -146,7 +148,6 @@ pub(super) mod main_menu {
                 ..default()
             },
             OnMainMenu,
-            // child of ^ node
             children![(
                 Node {
                     flex_direction: FlexDirection::Column,

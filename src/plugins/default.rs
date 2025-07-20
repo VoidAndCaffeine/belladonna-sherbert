@@ -1,4 +1,4 @@
-use bevy::{asset::AssetMetaCheck, prelude::*};
+use bevy::{asset::{AssetMetaCheck,load_internal_binary_asset}, prelude::*};
 
 const BACKGROUND_COLOR: Color = Color::srgb(1.0, 0.0, 1.0);
 
@@ -28,4 +28,10 @@ pub(crate) fn plugin(app: &mut App) {
                     ..default()
                 }),
         );
+    // set default font to Rotis
+    load_internal_binary_asset!(
+        app,
+        TextFont::default().font,
+        "../../assets/fonts/Rotis Serif Std/Rotis Serif Std 55 Regular/Rotis Serif Std 55 Regular.otf",
+        |bytes: &[u8], _path: String| {Font::try_from_bytes(bytes.to_vec()).unwrap()});
 }
