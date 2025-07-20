@@ -29,7 +29,6 @@ impl Plugin for AppPlugin {
             resources::asset_tracking::plugin,
             plugins::default::plugin,
             resources::fonts::plugin,
-            resources::input::plugin,
             plugins::game::plugin,
         ));
 

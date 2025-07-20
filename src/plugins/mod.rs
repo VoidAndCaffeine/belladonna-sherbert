@@ -5,3 +5,4 @@ pub(super) mod game;
 pub(super) mod main_menu;
 pub(super) mod world1;
 pub(super) mod world2;
+pub(super) mod input;
