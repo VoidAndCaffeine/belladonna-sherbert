@@ -9,8 +9,8 @@ publish = false
 
 [dependencies]
 bevy = { version = "0.16", features = ["wayland"] }
-avian2d = { git = "https://github.com/Jondolf/avian", branch = "main" }
 rand = "0.9.1"
+blenvy = { git = "https://github.com/NicoZweifel/Blenvy.git", branch = "0.16-fixed"}
 log = { version = "*", features = ["max_level_debug", "release_max_level_error"] }
 # Compile low-severity logs out of web builds for performance.
 tracing = { version = "0.1", features = ["max_level_debug", "release_max_level_warn"] }
@@ -34,7 +34,7 @@ dev = [
   "bevy/bevy_ui_debug",
   # Improve error messages coming from Bevy
   "bevy/track_location",
-  "avian2d/diagnostic_ui"
+  #"avian2d/diagnostic_ui"
 ]
 
 [lints.clippy]

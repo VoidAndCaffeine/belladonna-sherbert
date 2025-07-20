@@ -1,5 +1,6 @@
 use bevy::{asset::{AssetMetaCheck,load_internal_binary_asset}, prelude::*};
 use bevy::window::PresentMode;
+use blenvy::*;
 
 const BACKGROUND_COLOR: Color = Color::srgb(1.0, 0.0, 1.0);
 
@@ -7,7 +8,7 @@ const BACKGROUND_COLOR: Color = Color::srgb(1.0, 0.0, 1.0);
 
 pub(crate) fn plugin(app: &mut App) {
     app.insert_resource(ClearColor(BACKGROUND_COLOR))
-        .add_plugins(
+        .add_plugins((
             DefaultPlugins
                 .set(AssetPlugin {
                     // Wasm builds will check for meta files (that don't exist) if this isn't set.
@@ -29,7 +30,31 @@ pub(crate) fn plugin(app: &mut App) {
                     }),
                     ..default()
                 }),
-        );
+            BlenvyPlugin::default())
+        ).register_type::<Player>()
+        .add_systems(Startup, setup);
+
+    #[derive(Component, Reflect)]
+    #[reflect(Component)]
+    struct Player {
+        strength: f32,
+        perception: f32,
+        endurance: f32,
+        charisma: f32,
+        intelligence: f32,
+        agility: f32,
+        luck: f32,
+    }
+
+    fn setup(mut commands: Commands) {
+        commands.spawn((
+            BlueprintInfo::from_path("levels/World.glb"),
+            SpawnBlueprint,
+            HideUntilReady,
+            GameWorldTag,
+        ));
+    }
+
     // set default font to Rotis
     load_internal_binary_asset!(
         app,

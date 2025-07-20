@@ -2,7 +2,6 @@
 
 use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 
-mod pausing;
 
 const TOGGLE_KEY: KeyCode = KeyCode::Backquote;
 
@@ -11,8 +10,7 @@ pub(crate) fn plugin(app: &mut App) {
 
     // Toggle the debug overlay for UI.
     app
-        .add_systems(Update, toggle_system)
-        .add_plugins(pausing::PausePlugin);
+        .add_systems(Update, toggle_system);
 }
 
 fn toggle_debug_ui(mut options: ResMut<UiDebugOptions>) {

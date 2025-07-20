@@ -23,7 +23,6 @@ impl Plugin for AppPlugin {
             plugins::default::plugin,
             resources::fonts::plugin,
             plugins::camera::plugin,
-            plugins::physics::plugin,
             resources::input::plugin,
             plugins::game::plugin,
         ));
