@@ -1,3 +1,7 @@
 /target
 /Blender
 .idea/workspace.xml
+
+# Godot 4+ specific ignores
+.godot/
+/android/
