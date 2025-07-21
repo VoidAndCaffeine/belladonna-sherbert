@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use bevy_tnua::prelude::{TnuaBuiltinJump, TnuaBuiltinWalk, TnuaController};
 use bevy_tnua::TnuaUserControlsSystemSet;
 use bevy_tnua_avian3d::TnuaAvian3dSensorShape;
-use leafwing_input_manager::prelude::{ActionState, InputMap};
+use leafwing_input_manager::prelude::{ActionState, CircleDeadZone, InputMap};
 use crate::plugins::game::GameState;
 use crate::plugins::input::PlayerAction;
 use crate::prelude::input;
@@ -28,13 +28,13 @@ fn apply_movement_controls(
     action_state: Res<ActionState<PlayerAction>>,
     mut query: Query<&mut TnuaController>
 ){
+    let deadzone = CircleDeadZone::new(0.2);
     let Ok(mut controller) = query.single_mut() else { return; };
-    let mut direction = Vec3::ZERO;
-    if action_state.axis_pair(&PlayerAction::Move) != Vec2::ZERO{
-        let move_delta =
-            time.delta_secs() * action_state.clamped_axis_pair(&PlayerAction::Move);
-        direction.x += move_delta.y;
-        direction.z += move_delta.x;
+    let mut walk_direction = Vec3::ZERO;
+    if deadzone.normalize(action_state.axis_pair(&PlayerAction::Move)) != Vec2::ZERO{
+        let move_delta = deadzone.normalize(action_state.clamped_axis_pair(&PlayerAction::Move));
+        walk_direction.x += move_delta.y;
+        walk_direction.z += move_delta.x;
     }
 
     // Feed the basis every frame. Even if the player doesn't move - just use `desired_velocity:
@@ -42,7 +42,7 @@ fn apply_movement_controls(
     // just fall.
     controller.basis(TnuaBuiltinWalk {
         // The `desired_velocity` determines how the character will move.
-        desired_velocity: direction.normalize_or_zero() * 10.0,
+        desired_velocity: walk_direction.normalize_or_zero() * 10.0,
         // The `float_height` must be greater (even if by little) from the distance between the
         // character's center and the lowest point of its collider.
         float_height: 1.0,
