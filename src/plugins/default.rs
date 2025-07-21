@@ -7,9 +7,9 @@ use bevy::render::RenderSet::PhaseSort;
 use bevy::window::PresentMode;
 use blenvy::*;
 
-const BACKGROUND_COLOR: Color = Color::srgb(1.0, 0.0, 1.0);
+const BACKGROUND_COLOR: Color = Color::srgb(0.0, 0.0, 0.0);
 
-// Sets up the default plugins like windows, assets, etc
+// Sets up the default plugins like windows, assets, physics etc
 
 pub(crate) fn plugin(app: &mut App) {
     app.insert_resource(ClearColor(BACKGROUND_COLOR))

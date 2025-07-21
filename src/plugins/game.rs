@@ -17,26 +17,10 @@ pub enum GameState {
     LoadWorld,
 }
 
-#[derive(States, Debug, Clone, PartialEq, Eq, Hash, Default)]
-pub enum MenuState {
-    #[default]
-    None,
-    Ui,
-    Pause,
-    Inventory,
-}
-
 pub(crate) fn plugin(app: &mut App) {
     // Your game logic here
     app
         .init_state::<GameState>()
-        .init_state::<MenuState>()
-
-        .add_plugins(input::input_plugin)
-        .add_plugins(player::player_plugin)
-        .add_plugins(main_menu::main_menu_plugin)
-        .add_plugins(world::world2_plugin)
-
         .add_systems(Update, world::load_finished)
     ;
 }

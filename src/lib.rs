@@ -26,10 +26,13 @@ pub struct AppPlugin;
 impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
-            resources::asset_tracking::plugin,
             plugins::default::plugin,
             resources::fonts::plugin,
             plugins::game::plugin,
+            plugins::input::input_plugin,
+            resources::player::player_plugin,
+            plugins::main_menu::main_menu_plugin,
+            plugins::world::world_plugin,
         ));
 
         // Enable dev tools for dev builds.

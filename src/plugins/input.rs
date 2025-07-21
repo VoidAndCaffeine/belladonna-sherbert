@@ -2,9 +2,10 @@ use bevy::input::gamepad::GamepadEvent;
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
+use bevy_tnua::TnuaUserControlsSystemSet;
 use leafwing_input_manager::prelude::*;
 use crate::plugins::game::GameState;
-use crate::plugins::world::world2_plugin;
+use crate::plugins::world::world_plugin;
 use crate::prelude::player::Player;
 pub(crate) fn input_plugin(app: &mut App) {
     app
@@ -27,6 +28,8 @@ pub enum PlayerAction {
     #[actionlike(Button)]
     Menu,
     #[actionlike(Button)]
+    Inventory,
+    #[actionlike(Button)]
     Jump,
 }
 
@@ -36,11 +39,13 @@ impl PlayerAction{
         input_map.insert_dual_axis(Self::Move, GamepadStick::LEFT);
         input_map.insert_dual_axis(Self::Look, GamepadStick::RIGHT);
         input_map.insert(Self::Interact, GamepadButton::South);
+        input_map.insert(Self::Inventory, GamepadButton::Select);
         input_map.insert(Self::Menu, GamepadButton::Start);
         input_map.insert(Self::Jump, GamepadButton::North);
 
         input_map.insert_dual_axis(Self::Move, VirtualDPad::wasd());
         input_map.insert(Self::Interact, MouseButton::Left);
+        input_map.insert(Self::Inventory, KeyCode::Tab);
         input_map.insert(Self::Menu, KeyCode::Escape);
         input_map.insert(Self::Jump, KeyCode::Space);
 
@@ -61,6 +66,7 @@ impl Plugin for InputModeManagerPlugin {
                 Update,
                 activate_mkb.run_if(in_state(ActiveInput::Gamepad)),
             )
+            .add_systems(Update,apply_ui_controls)
         ;
     }
 }
@@ -99,8 +105,11 @@ fn activate_mkb(
     }
 }
 
-fn apply_ui_world_controls(action_state: ActionState<PlayerAction>) {
+fn apply_ui_controls(
+    action_state: Res<ActionState<PlayerAction>>,
+    mut game_state: ResMut<NextState<GameState>>,
+) {
     if action_state.just_pressed(&PlayerAction::Menu){
-
+        game_state.set(GameState::MainMenu)
     }
 }

@@ -9,12 +9,12 @@ use crate::prelude::entity_despawner;
 use crate::prelude::player::Player;
 
 #[derive(Component)]
-struct World2;
+struct World;
 
-pub(crate) fn world2_plugin(app: &mut App) {
+pub(crate) fn world_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::LoadWorld), (setup_level, setup_player))
-        .add_systems(OnExit(GameState::InGame), entity_despawner::<World2>)
+        .add_systems(OnExit(GameState::InGame), (entity_despawner::<World>, entity_despawner::<Player>))
     ;
 }
 
@@ -58,7 +58,7 @@ fn setup_player(
 
 fn setup_level(mut commands: Commands) {
     info!("Loading world 2");
-    commands.spawn((World2,
+    commands.spawn((World,
                     BlueprintInfo::from_path("levels/Home.glb"),
                     SpawnBlueprint,
     ));
