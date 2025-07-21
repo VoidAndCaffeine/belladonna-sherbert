@@ -207,7 +207,7 @@ fn menu_action(
                 MenuButtonAction::World2 => {
                     info!("Selected World 2");
                     menu_state.set(MainMenuState::Disabled);
-                    game_state.set(GameState::InGameWorld2)
+                    game_state.set(GameState::LoadWorld2)
                 }
                 MenuButtonAction::Settings => {
                     menu_state.set(MainMenuState::Settings);

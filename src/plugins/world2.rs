@@ -8,9 +8,20 @@ struct World2;
 
 pub(crate) fn world2_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(GameState::InGameWorld2), setup)
-        .add_systems(OnExit(GameState::InGameWorld2), entity_despawner::<World2>)
+        .add_systems(OnEnter(GameState::LoadWorld2), setup)
+        .add_systems(OnExit(GameState::InGame), entity_despawner::<World2>)
     ;
+}
+
+pub fn load_finished(
+    mut blueprint_event: EventReader<BlueprintEvent>,
+    mut next_state: ResMut<NextState<GameState>>,
+){
+    for event in blueprint_event.read(){
+        if let BlueprintEvent::InstanceReady { entity: _, blueprint_name: _, blueprint_path: _ } = event {
+            next_state.set(GameState::InGame);
+        }    
+    }
 }
 
 fn setup(mut commands: Commands) {

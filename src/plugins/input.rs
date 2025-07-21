@@ -1,7 +1,30 @@
+use bevy::input::gamepad::GamepadEvent;
+use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
+use bevy::window::PrimaryWindow;
 use leafwing_input_manager::prelude::*;
-use crate::prelude::player;
+use crate::plugins::game::GameState;
+use crate::plugins::world2::world2_plugin;
 use crate::prelude::player::Player;
+pub(crate) fn input_plugin(app: &mut App) {
+    app
+        .add_plugins(InputManagerPlugin::<PlayerAction>::default())
+        .add_plugins(InputModeManagerPlugin)
+        .init_resource::<ActionState<PlayerAction>>()
+        .insert_resource(PlayerAction::default_input_map())
+        .add_systems(
+            Update,
+            player_mouse_look
+                .run_if(in_state(GameState::InGame))
+                .run_if(in_state(ActiveInput::MouseKeyboard))
+        )
+        .add_systems(
+            Update,
+            control_player
+                .run_if(in_state(GameState::InGame))
+                .after(player_mouse_look))
+    ;
+}
 
 #[derive(Actionlike, PartialEq, Eq, Hash, Clone, Copy, Debug, Reflect)]
 #[actionlike(DualAxis)]
@@ -29,5 +52,107 @@ impl PlayerAction{
         input_map.insert(Self::Menu, KeyCode::Escape);
 
         input_map
+    }
+}
+
+pub struct InputModeManagerPlugin;
+impl Plugin for InputModeManagerPlugin {
+    fn build(&self, app: &mut App) {
+        app
+            .init_state::<ActiveInput>()
+            .add_systems(
+                Update,
+                activate_gamepad.run_if(in_state(ActiveInput::MouseKeyboard)),
+            )
+            .add_systems(
+                Update,
+                activate_mkb.run_if(in_state(ActiveInput::Gamepad)),
+            )
+        ;
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
+enum ActiveInput{
+    #[default]
+    MouseKeyboard,
+    Gamepad,
+}
+
+/// switches input to gamepad
+fn activate_gamepad(
+    mut next_state: ResMut<NextState<ActiveInput>>,
+    mut gamepad_evr: EventReader<GamepadEvent>,
+){
+    for ev in gamepad_evr.read(){
+        match ev {
+            GamepadEvent::Button(_) | GamepadEvent::Axis(_) =>{
+                info!("Switch to gamepad");
+                next_state.set(ActiveInput::Gamepad);
+                return;
+            }
+            _ => (),
+        }
+    }
+}
+
+fn activate_mkb(
+    mut next_state: ResMut<NextState<ActiveInput>>,
+    mut kb_evr: EventReader<KeyboardInput>,
+){
+    for _ev in kb_evr.read() {
+        info!("Switch to keyboard");
+        next_state.set(ActiveInput::MouseKeyboard);
+    }
+}
+
+/// mouse settings
+fn player_mouse_look(
+    camera_query: Query<(&GlobalTransform, &Camera)>,
+    player_query: Query<&Transform, With<Player>>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+    mut action_state: ResMut<ActionState<PlayerAction>>,
+){
+    let (camera_transform, camera) = camera_query.single().expect("expected a single camera element");
+    let player_transform = player_query.single().expect("expected a single player element");
+    let window = window_query.single().expect("expected a single window element");
+
+    let player_position = player_transform.translation;
+    if let Some(p) = window
+        .cursor_position()
+        .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor).ok())
+        .and_then(|ray|{
+            Some(ray).zip(ray.intersect_plane(player_position, InfinitePlane3d::new(Vec3::Y)))
+        })
+        .map(|(ray, p)| ray.get_point(p))
+    {
+        let diff = (p - player_position).xz();
+        if diff.length_squared() > 1e-3f32 {
+            let action_data = action_state.dual_axis_data_mut_or_default(&PlayerAction::Look);
+            action_data.pair = Vec2::new(diff.x, -diff.y);
+        }
+    }
+}
+
+fn control_player(
+    time: Res<Time>,
+    action_state: Res<ActionState<PlayerAction>>,
+    mut player_transform: Single<&mut Transform, With<Player>>,
+){
+    if action_state.axis_pair(&PlayerAction::Move) != Vec2::ZERO{
+        // TODO: feed into player controller
+        let move_delta = time.delta_secs() * action_state.clamped_axis_pair(&PlayerAction::Move);
+        player_transform.translation += Vec3::new(move_delta.x, 0.0, move_delta.y);
+        info!("Player moved to {:?}", player_transform.translation.xy());
+    }
+
+    if action_state.axis_pair(&PlayerAction::Look) != Vec2::ZERO{
+        // TODO: see above
+        let look = action_state.axis_pair(&PlayerAction::Look).normalize();
+        info!("Player looked to {:?}", look);
+    }
+
+    if action_state.pressed(&PlayerAction::Menu){
+        error!("Menu not implemented");
     }
 }
