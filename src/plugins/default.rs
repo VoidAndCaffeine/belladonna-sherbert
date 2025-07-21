@@ -1,5 +1,8 @@
 use avian3d::prelude::*;
+use bevy_tnua::prelude::*;
+use bevy_tnua_avian3d::*;
 use bevy::{asset::{AssetMetaCheck,load_internal_binary_asset}, prelude::*};
+use bevy::reflect::Access::Field;
 use bevy::render::RenderSet::PhaseSort;
 use bevy::window::PresentMode;
 use blenvy::*;
@@ -34,6 +37,8 @@ pub(crate) fn plugin(app: &mut App) {
                 }),
             BlenvyPlugin::default(),
             PhysicsPlugins::default(),
+            TnuaControllerPlugin::new(FixedUpdate),
+            TnuaAvian3dPlugin::new(FixedUpdate)
         ))
     ;
 

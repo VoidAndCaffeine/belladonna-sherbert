@@ -11,11 +11,15 @@ publish = false
 bevy = { version = "0.16", features = ["wayland"] }
 rand = "0.9.1"
 blenvy = { git = "https://github.com/NicoZweifel/Blenvy.git", branch = "0.16-fixed"}
-log = { version = "*", features = ["max_level_debug", "release_max_level_error"] }
-# Compile low-severity logs out of web builds for performance.
-tracing = { version = "0.1", features = ["max_level_debug", "release_max_level_warn"] }
-avian3d = "0.3.1"
 leafwing-input-manager = "0.17"
+avian3d = "0.3.1"
+bevy-tnua-avian3d = "0.5.0"
+bevy-tnua = "0.24.0"
+
+# set debug stuff
+tracing = { version = "0.1", features = ["max_level_debug", "release_max_level_warn"] }
+# Compile low-severity logs out of web builds for performance.
+log = { version = "*", features = ["max_level_debug", "release_max_level_error"] }
 
 [features]
 default = [

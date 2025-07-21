@@ -18,11 +18,6 @@ pub(crate) fn input_plugin(app: &mut App) {
                 .run_if(in_state(GameState::InGame))
                 .run_if(in_state(ActiveInput::MouseKeyboard))
         )
-        .add_systems(
-            Update,
-            control_player
-                .run_if(in_state(GameState::InGame))
-                .after(player_mouse_look))
     ;
 }
 
@@ -37,6 +32,8 @@ pub enum PlayerAction {
     Interact,
     #[actionlike(Button)]
     Menu,
+    #[actionlike(Button)]
+    Jump,
 }
 
 impl PlayerAction{
@@ -46,10 +43,12 @@ impl PlayerAction{
         input_map.insert_dual_axis(Self::Look, GamepadStick::RIGHT);
         input_map.insert(Self::Interact, GamepadButton::South);
         input_map.insert(Self::Menu, GamepadButton::Start);
+        input_map.insert(Self::Jump, GamepadButton::North);
 
         input_map.insert_dual_axis(Self::Move, VirtualDPad::wasd());
         input_map.insert(Self::Interact, MouseButton::Left);
         input_map.insert(Self::Menu, KeyCode::Escape);
+        input_map.insert(Self::Jump, KeyCode::Space);
 
         input_map
     }
@@ -131,28 +130,5 @@ fn player_mouse_look(
             let action_data = action_state.dual_axis_data_mut_or_default(&PlayerAction::Look);
             action_data.pair = Vec2::new(diff.x, -diff.y);
         }
-    }
-}
-
-fn control_player(
-    time: Res<Time>,
-    action_state: Res<ActionState<PlayerAction>>,
-    mut player_transform: Single<&mut Transform, With<Player>>,
-){
-    if action_state.axis_pair(&PlayerAction::Move) != Vec2::ZERO{
-        // TODO: feed into player controller
-        let move_delta = time.delta_secs() * action_state.clamped_axis_pair(&PlayerAction::Move);
-        player_transform.translation += Vec3::new(move_delta.x, 0.0, move_delta.y);
-        info!("Player moved to {:?}", player_transform.translation.xy());
-    }
-
-    if action_state.axis_pair(&PlayerAction::Look) != Vec2::ZERO{
-        // TODO: see above
-        let look = action_state.axis_pair(&PlayerAction::Look).normalize();
-        info!("Player looked to {:?}", look);
-    }
-
-    if action_state.pressed(&PlayerAction::Menu){
-        error!("Menu not implemented");
     }
 }
