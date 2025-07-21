@@ -18,12 +18,12 @@ pub fn player_plugin(app: &mut App) {
         .register_type::<Player>()
         .add_systems(
             FixedUpdate,
-            apply_controls.in_set(TnuaUserControlsSystemSet)
+            apply_movement_controls.in_set(TnuaUserControlsSystemSet)
         )
     ;
 }
 
-fn apply_controls(
+fn apply_movement_controls(
     time: Res<Time>,
     action_state: Res<ActionState<PlayerAction>>,
     mut query: Query<&mut TnuaController>

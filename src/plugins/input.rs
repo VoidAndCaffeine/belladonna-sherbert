@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use leafwing_input_manager::prelude::*;
 use crate::plugins::game::GameState;
-use crate::plugins::world2::world2_plugin;
+use crate::plugins::world::world2_plugin;
 use crate::prelude::player::Player;
 pub(crate) fn input_plugin(app: &mut App) {
     app
@@ -12,12 +12,6 @@ pub(crate) fn input_plugin(app: &mut App) {
         .add_plugins(InputModeManagerPlugin)
         .init_resource::<ActionState<PlayerAction>>()
         .insert_resource(PlayerAction::default_input_map())
-        .add_systems(
-            Update,
-            player_mouse_look
-                .run_if(in_state(GameState::InGame))
-                .run_if(in_state(ActiveInput::MouseKeyboard))
-        )
     ;
 }
 
@@ -105,30 +99,8 @@ fn activate_mkb(
     }
 }
 
-/// mouse settings
-fn player_mouse_look(
-    camera_query: Query<(&GlobalTransform, &Camera)>,
-    player_query: Query<&Transform, With<Player>>,
-    window_query: Query<&Window, With<PrimaryWindow>>,
-    mut action_state: ResMut<ActionState<PlayerAction>>,
-){
-    let (camera_transform, camera) = camera_query.single().expect("expected a single camera element");
-    let player_transform = player_query.single().expect("expected a single player element");
-    let window = window_query.single().expect("expected a single window element");
+fn apply_ui_world_controls(action_state: ActionState<PlayerAction>) {
+    if action_state.just_pressed(&PlayerAction::Menu){
 
-    let player_position = player_transform.translation;
-    if let Some(p) = window
-        .cursor_position()
-        .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor).ok())
-        .and_then(|ray|{
-            Some(ray).zip(ray.intersect_plane(player_position, InfinitePlane3d::new(Vec3::Y)))
-        })
-        .map(|(ray, p)| ray.get_point(p))
-    {
-        let diff = (p - player_position).xz();
-        if diff.length_squared() > 1e-3f32 {
-            let action_data = action_state.dual_axis_data_mut_or_default(&PlayerAction::Look);
-            action_data.pair = Vec2::new(diff.x, -diff.y);
-        }
     }
 }

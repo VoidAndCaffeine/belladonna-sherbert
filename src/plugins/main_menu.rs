@@ -25,8 +25,7 @@ enum MainMenuState {
 // All actions that can be triggered from a button click
 #[derive(Component)]
 enum MenuButtonAction {
-    World1,
-    World2,
+    World,
     Settings,
     Quit,
 }
@@ -128,25 +127,11 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Button,
                     button_node.clone(),
                     BackgroundColor(NORMAL_BUTTON),
-                    MenuButtonAction::World1,
+                    MenuButtonAction::World,
                     children![
                         (ImageNode::new(right_icon.clone()), button_icon_node.clone()),
                         (
-                            Text::new("World 1"),
-                            button_text_font.clone(),
-                            TextColor(TEXT_COLOR),
-                        ),
-                    ]
-                ),
-                (
-                    Button,
-                    button_node.clone(),
-                    BackgroundColor(NORMAL_BUTTON),
-                    MenuButtonAction::World2,
-                    children![
-                        (ImageNode::new(right_icon.clone()), button_icon_node.clone()),
-                        (
-                            Text::new("World 2"),
+                            Text::new("Load"),
                             button_text_font.clone(),
                             TextColor(TEXT_COLOR),
                         ),
@@ -199,15 +184,10 @@ fn menu_action(
     for (interaction, menu_button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match menu_button_action {
-                MenuButtonAction::World1 => {
-                    info!("Selected World 1");
+                MenuButtonAction::World => {
+                    info!("Loading World");
                     menu_state.set(MainMenuState::Disabled);
-                    game_state.set(GameState::InGameWorld1)
-                }
-                MenuButtonAction::World2 => {
-                    info!("Selected World 2");
-                    menu_state.set(MainMenuState::Disabled);
-                    game_state.set(GameState::LoadWorld2)
+                    game_state.set(GameState::LoadWorld)
                 }
                 MenuButtonAction::Settings => {
                     menu_state.set(MainMenuState::Settings);
